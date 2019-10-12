@@ -2,11 +2,15 @@ package com.example.workplacedamagemanager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+//import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import android.text.TextUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
@@ -27,22 +31,35 @@ public class EditDataActivity extends AppCompatActivity {
     private static final String TAG = "EditDataActivity";
 
     private Button btnSave,btnDelete,btnImage;
-    private EditText Ntxt, Dtxt, Datxt, Stxt;
+    private EditText Ntxt, Dtxt, DMtxt, DDtxt, DYtxt, Stxt;
     private ImageView Itxt;
 
    DatabaseHelper mDatabaseHelper;
 
 
-    EditText editName, editDescription, editSeverity,editDate;
+    EditText editName, editDescription, editSeverity,editDateM, editDateD, editDateY;
     Button add;
     private ListView mListView;
 
     private String selectedName;
     private int selectedID;
-    private int selectedDate;
+    private int selectedDateM;
+    private int selectedDateD;
+    private int selectedDateY;
     private int selectedSeverity;
     private String selectedDescription;
     private byte[] selectedImage;
+
+    private boolean hasImage(@NonNull ImageView view) {
+        Drawable drawable = view.getDrawable();
+        boolean hasImage = (drawable != null);
+
+        if (hasImage && (drawable instanceof BitmapDrawable)) {
+            hasImage = ((BitmapDrawable)drawable).getBitmap() != null;
+        }
+
+        return hasImage;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +72,10 @@ public class EditDataActivity extends AppCompatActivity {
         Dtxt = (EditText) findViewById(R.id.editText_d);
         Itxt = (ImageView) findViewById(R.id.imageView);
 
-        Datxt = (EditText) findViewById(R.id.editText_da);
+        DMtxt = (EditText) findViewById(R.id.editText_dM);
+        DDtxt = (EditText) findViewById(R.id.editText_dD);
+        DYtxt = (EditText) findViewById(R.id.editText_dY);
+
 
         Stxt = (EditText) findViewById(R.id.editText_s);
 
@@ -70,29 +90,38 @@ public class EditDataActivity extends AppCompatActivity {
         //now get the name we passed as an extra
         selectedName = receivedIntent.getStringExtra("name");
         selectedDescription = receivedIntent.getStringExtra("description");
-        selectedImage = receivedIntent.getByteArrayExtra("image");
-
-        selectedDate = receivedIntent.getIntExtra("date",-1);
+        selectedDateM = receivedIntent.getIntExtra("datem",-1);
+        selectedDateD = receivedIntent.getIntExtra("dated",-1);
+        selectedDateY = receivedIntent.getIntExtra("datey",-1);
         selectedSeverity = receivedIntent.getIntExtra("severity",-1);
+        selectedImage = receivedIntent.getByteArrayExtra("image");
         //set the text to show the current selected name
         Ntxt.setText(selectedName);
         Stxt.setText(Integer.toString(selectedSeverity));
-        Datxt.setText(Integer.toString(selectedDate));
+        DMtxt.setText(Integer.toString(selectedDateM));
+        DDtxt.setText(Integer.toString(selectedDateD));
+        DYtxt.setText(Integer.toString(selectedDateY));
         Dtxt.setText(selectedDescription);
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(selectedImage,0,selectedImage.length);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
         Itxt.setImageBitmap(bitmap);
-
+        Itxt.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            String name = Ntxt.getText().toString();
+                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                    String name = Ntxt.getText().toString();
             String description = Dtxt.getText().toString();
+
                 int severity = Integer.parseInt(Stxt.getText().toString());
-                int date = Integer.parseInt(Datxt.getText().toString());
+                int dateM = Integer.parseInt(DMtxt.getText().toString());
+                int dateD = Integer.parseInt(DDtxt.getText().toString());
+                int dateY = Integer.parseInt(DYtxt.getText().toString());
                 byte[] img = selectedImage;
-                if(!name.equals("") && !description.equals("")){
-                    mDatabaseHelper.updateName(name,selectedID,selectedName, description, date, severity,selectedImage);
+              //  if(!name.equals("") && !description.equals("") && img != null && !Integer.toString(severity).equals("") && !Integer.toString(date).equals("")){
+
+                    mDatabaseHelper.updateName(name,selectedID,selectedName, description, dateM, dateD, dateY, severity,selectedImage);
                     Intent editScreenIntent = new Intent(view.getContext(), MainActivity.class);
                     startActivity(editScreenIntent);
                 }else{
@@ -147,6 +176,10 @@ public class EditDataActivity extends AppCompatActivity {
             selectedImage = getBitmapAsByteArray(bitmap);
 
             ImageView Itxt = (ImageView) findViewById(R.id.imageView);
+            /*boolean supported = inputStream.markSupported();
+            if(supported){
+            inputStream.reset();
+            }*/
             bitmap = BitmapFactory.decodeByteArray(selectedImage,0,selectedImage.length);
             Itxt.setImageBitmap(bitmap);
 
@@ -156,7 +189,7 @@ public class EditDataActivity extends AppCompatActivity {
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
         return outputStream.toByteArray();
     }
 

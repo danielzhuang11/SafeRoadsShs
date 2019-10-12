@@ -10,28 +10,30 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Date;
-//initializes titles
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "Damage.db";
     public static final String TABLE_NAME = "damage_table";
     public static final String col_1 = "ID";
     public static final String col_2 = "NAME";
     public static final String col_3 = "DESCRIPTION";
-    public static final String col_4 = "DATE";
-    public static final String col_5 = "SEVERITY";
+    public static final String col_4 = "DATEM";
+    public static final String col_5 = "DATED";
+    public static final String col_6 = "DATEY";
+    public static final String col_7 = "SEVERITY";
     private static final String TAG = "Message:";
-     public static final String col_6 = "IMAGE";
+     public static final String col_8 = "IMAGE";
 
 
-//makes database
+
     public DatabaseHelper( Context context) {
-        super(context, DATABASE_NAME,null,3);
+        super(context, DATABASE_NAME,null,4);
         SQLiteDatabase db = this.getWritableDatabase();
     }
-//creates table
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-    db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, DATE INTEGER, SEVERITY INTEGER, IMAGE BLOB)");
+    db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, DATEM INTEGER, DATED INTEGER, DATEY INTEGER, SEVERITY INTEGER, IMAGE BLOB)");
     }
 
     @Override
@@ -39,24 +41,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          db.execSQL("DROP TABLE IF EXISTs " + TABLE_NAME);
         onCreate(db);
     }
-    //takes values and inserts into database
-    public boolean insertData(String name, String description, int severity, int date, byte[] image)
+    public boolean insertData(String name, String description, int severity, int dateM, int dateD, int dateY, byte[] image)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(col_2, name);
         contentValues.put(col_3, description);
-        contentValues.put(col_4, date);
-        contentValues.put(col_5, severity);
-        contentValues.put(col_6, image);
+        contentValues.put(col_4, dateM);
+        contentValues.put(col_5, dateD);
+        contentValues.put(col_6, dateY);
+        contentValues.put(col_7, severity);
+        contentValues.put(col_8, image);
 
 
         long result  = db.insert(TABLE_NAME,null, contentValues);
         return(result != -1);
 
     }
-    //returns all the data with a certain name
     public Cursor getItemID(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + col_2 + " = '" + name + "'";
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
+
+    public Cursor search(String name){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + col_2 + " = '" + name + "'";
@@ -70,17 +81,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param id
      * @param oldName
      */
-    //updates everything
-    public void updateName(String newName, int id, String oldName, String des, int da, int s, byte[] i ){
+    public void updateName(String newName, int id, String oldName, String des, int dM,int dD,int dY, int s, byte[] i ){
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             ContentValues contentValues = new ContentValues();
             contentValues.put(col_1, id);
             contentValues.put(col_2, newName);
             contentValues.put(col_3, des);
-            contentValues.put(col_4, da);
-            contentValues.put(col_5, s);
-            contentValues.put(col_6, i);
+            contentValues.put(col_4, dM);
+            contentValues.put(col_5, dD);
+            contentValues.put(col_6, dY);
+            contentValues.put(col_7, s);
+            contentValues.put(col_8, i);
 
 
             db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{Integer.toString(id)} );
@@ -104,7 +116,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " AND " + col_2 + " = '" + name + "'";
         db.execSQL(query);
     }
-    //retunrs the table
     public Cursor getAllData()
     {
         SQLiteDatabase db = this.getWritableDatabase();
