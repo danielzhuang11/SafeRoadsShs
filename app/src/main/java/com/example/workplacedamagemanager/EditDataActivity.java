@@ -1,5 +1,6 @@
 package com.example.workplacedamagemanager;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -19,8 +20,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.text.TextUtils;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by User on 2/28/2017.
@@ -30,7 +43,7 @@ public class EditDataActivity extends AppCompatActivity {
 
     private static final String TAG = "EditDataActivity";
 
-    private Button btnSave,btnDelete,btnImage;
+    private Button btnSave,btnDelete,btnImage,btnSend;
     private EditText Ntxt, Dtxt, DMtxt, DDtxt, DYtxt, Stxt;
     private ImageView Itxt;
 
@@ -68,6 +81,7 @@ public class EditDataActivity extends AppCompatActivity {
         btnSave = (Button) findViewById(R.id.btnSave);
         btnDelete = (Button) findViewById(R.id.btnDelete);
         btnImage = findViewById(R.id.button2);
+        btnSend = findViewById(R.id.btnSend);
         Ntxt = (EditText) findViewById(R.id.editable_item);
         Dtxt = (EditText) findViewById(R.id.editText_d);
         Itxt = (ImageView) findViewById(R.id.imageView);
@@ -151,8 +165,69 @@ public class EditDataActivity extends AppCompatActivity {
             }
         });
 
-    }
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addItemToSheet();
+                toastMessage("sent to sheet!");
 
+            }
+        });
+
+    }
+    private void addItemToSheet() {
+        final ProgressDialog loading = ProgressDialog.show(this,"Adding Item","Please wait");
+       final String name = Ntxt.getText().toString();
+        final String description = Dtxt.getText().toString();
+        final int severity = Integer.parseInt(Stxt.getText().toString());
+        final int dateM = Integer.parseInt(DMtxt.getText().toString());
+        final  int dateD = Integer.parseInt(DDtxt.getText().toString());
+        final  int dateY = Integer.parseInt(DYtxt.getText().toString());
+        final byte[] img = selectedImage;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbzX0lhVQBZnfQURdQllg2RMlFMuBt2DRjUCq3Gp7QmlXsIvM1Ho/exec",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        loading.dismiss();
+                        Toast.makeText(EditDataActivity.this,response,Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        startActivity(intent);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> parmas = new HashMap<>();
+
+                //here we pass params
+                parmas.put("action","addItem");
+                parmas.put("name",name);
+                parmas.put("description",description);
+
+                return parmas;
+            }
+        };
+
+        int socketTimeOut = 5000;// u can change this .. here it is 50 seconds
+
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(retryPolicy);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        queue.add(stringRequest);
+
+
+    }
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);

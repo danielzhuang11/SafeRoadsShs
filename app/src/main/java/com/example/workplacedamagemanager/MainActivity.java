@@ -2,7 +2,6 @@ package com.example.workplacedamagemanager;
 
 import android.content.Intent;
 import android.database.Cursor;
-//import android.support.v7.app.AlertDialog; this is git
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-//import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
