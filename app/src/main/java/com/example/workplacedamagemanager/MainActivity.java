@@ -2,7 +2,7 @@ package com.example.workplacedamagemanager;
 
 import android.content.Intent;
 import android.database.Cursor;
-//import android.support.v7.app.AlertDialog;
+//import android.support.v7.app.AlertDialog; this is git
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
