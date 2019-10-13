@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import android.util.Base64;
 
 /**
  * Created by User on 2/28/2017.
@@ -184,7 +185,7 @@ public class EditDataActivity extends AppCompatActivity {
         final  int dateD = Integer.parseInt(DDtxt.getText().toString());
         final  int dateY = Integer.parseInt(DYtxt.getText().toString());
         final byte[] img = selectedImage;
-
+        final String encodedImage = Base64.encodeToString(img, Base64.DEFAULT);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbzX0lhVQBZnfQURdQllg2RMlFMuBt2DRjUCq3Gp7QmlXsIvM1Ho/exec",
                 new Response.Listener<String>() {
                     @Override
@@ -206,14 +207,15 @@ public class EditDataActivity extends AppCompatActivity {
         ) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> parmas = new HashMap<>();
+                Map<String, String> params = new HashMap<>();
 
                 //here we pass params
-                parmas.put("action","addItem");
-                parmas.put("name",name);
-                parmas.put("description",description);
+                params.put("action","addItem");
+                params.put("name",name);
+                params.put("description",description);
+                params.put("img",encodedImage);
 
-                return parmas;
+                return params;
             }
         };
 
