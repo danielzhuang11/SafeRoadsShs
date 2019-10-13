@@ -17,7 +17,7 @@
         android:layout_marginRight="85dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.585"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +33,7 @@
         android:layout_marginBottom="30dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Description"
+        android:hint="Description"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="387dp" />
 
@@ -47,7 +47,7 @@
         android:layout_marginTop="111dp"
         android:ems="10"
         android:inputType="number"
-        android:text="M"
+        android:hint="M"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="81dp" />
 
@@ -61,7 +61,7 @@
         android:layout_marginTop="111dp"
         android:ems="10"
         android:inputType="number"
-        android:text="D"
+        android:hint="D"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="81dp" />
     <EditText
@@ -74,7 +74,7 @@
         android:layout_marginTop="111dp"
         android:ems="10"
         android:inputType="number"
-        android:text="Y"
+        android:hint="Y"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="81dp" />
 
@@ -106,7 +106,7 @@
         android:layout_marginTop="107dp"
         android:ems="10"
         android:inputType="number"
-        android:text="Severity"
+        android:hint="Severity"
         tools:layout_editor_absoluteX="205dp"
         tools:layout_editor_absoluteY="80dp" />
 
