@@ -5,5 +5,9 @@
         android:id="@+id/filereport"
         android:title="File A Report"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/database"
+        android:title="Database"
+        app:showAsAction="never"/>
 
 </menu>
