@@ -71,13 +71,7 @@ refresh = (Button)findViewById(R.id.refresh);
 
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
 
-    }
     public void populateListViewSearch(Cursor data) {
         Log.d("hi", "populateListView: Displaying data in the ListView.");
 
@@ -157,20 +151,8 @@ refresh = (Button)findViewById(R.id.refresh);
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.filereport:
-                Intent intent1 = new Intent(this, Statistics.class);
-                this.startActivity(intent1);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
 
 
-    }
 
 
 
