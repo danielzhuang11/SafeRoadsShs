@@ -30,7 +30,7 @@ import android.hardware.SensorManager;
 
 public class RealMainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
 
-
+    public static Boolean toggle = false;
     Switch switch1;
     /*private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -79,6 +79,7 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
          switch1 = (Switch)findViewById(R.id.detect);
+         switch1.setChecked(toggle);
         switch1.setOnCheckedChangeListener(this);
 
         return true;
@@ -107,10 +108,11 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
     public void onCheckedChanged(CompoundButton buttonView, boolean b) {
         if(switch1.isChecked())
         {
+            toggle=true;
             startService(new Intent(this, ShakeService.class));
 
         }else{
-            onPause();
+            toggle=false;
             stopService(new Intent(this, ShakeService.class));
         }
     }

@@ -183,10 +183,6 @@ public static final int PICK_IMAGE = 1;
 
     public  void AddData()
     {
-
-
-
-
         if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editSeverity.getText())&&TextUtils.isDigitsOnly(editSeverity.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
         boolean isInserted = myDb.insertData(
                 editName.getText().toString(),
