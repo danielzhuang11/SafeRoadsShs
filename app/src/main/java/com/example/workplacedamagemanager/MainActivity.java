@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 int dateD =-1;
                 int dateM= -1;
                 int dateY=-1;
-                int severity =-1 ;
+                String severity ="";
                 byte[] img=null;
                 while(data.moveToNext()){
                     itemID = data.getInt(0);
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
                     dateY = data.getInt(5);
 
-                    severity = data.getInt(6);
+                    severity = data.getString(6);
                     img = data.getBlob(7);
 
 

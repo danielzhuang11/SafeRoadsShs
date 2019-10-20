@@ -106,8 +106,9 @@
         android:layout_marginLeft="198dp"
         android:layout_marginTop="107dp"
         android:ems="10"
-        android:inputType="number"
-        android:text="Severity"
+        android:inputType="none"
+        android:text="Coordinates"
+        android:enabled="false"
         tools:layout_editor_absoluteX="205dp"
         tools:layout_editor_absoluteY="80dp" />
 

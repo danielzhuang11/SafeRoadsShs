@@ -3,6 +3,7 @@ package com.example.workplacedamagemanager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -28,7 +29,7 @@ import java.io.FileNotFoundException;
 public class Record extends AppCompatActivity {
 
 public static final int PICK_IMAGE = 1;
-    EditText editName, editDescription, editSeverity,editDateM, editDateD, editDateY;
+    EditText editName, editDescription, editcoords,editDateM, editDateD, editDateY;
     Button add,img;
     DatabaseHelper myDb;
     byte[] imgByte = null;
@@ -47,7 +48,7 @@ public static final int PICK_IMAGE = 1;
         editDateY = (EditText)findViewById(R.id.editText_dY);
         editDescription = (EditText)findViewById(R.id.editText_d);
         editName = (EditText)findViewById(R.id.editText_n);
-        editSeverity = (EditText)findViewById(R.id.editText_s);
+        editcoords = (EditText)findViewById(R.id.editText_s);
         img = findViewById(R.id.button2);
         add.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -87,30 +88,24 @@ public static final int PICK_IMAGE = 1;
                 ExifInterface (FileDescriptor fileDescriptor) added in API level 24
                  */
                 ExifInterface exifInterface = new ExifInterface(fileDescriptor);
-                String exif="Exif: " + fileDescriptor.toString();
-
-                exif += "\nGPS related:";
-                exif += "\n TAG_GPS_DATESTAMP: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
-                exif += "\n TAG_GPS_TIMESTAMP: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
-                exif += "\n TAG_GPS_LATITUDE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                exif += "\n TAG_GPS_LATITUDE_REF: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-                exif += "\n TAG_GPS_LONGITUDE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-                exif += "\n TAG_GPS_LONGITUDE_REF: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-                exif += "\n TAG_GPS_PROCESSING_METHOD: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
-
-                parcelFileDescriptor.close();
-
-                Toast.makeText(getApplicationContext(),
-                        exif,
-                        Toast.LENGTH_LONG).show();
-
+                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                String longlat = "";
+                if (!longitude.equals("null") && !latitude.equals("null")) {
+                    int first = latitude.indexOf('/');
+                    int second = latitude.indexOf('/', first + 1);
+                    int third = latitude.indexOf('/', second + 1);
+                    latitude = "" + (Double.valueOf(latitude.substring(0, first)) + Double.valueOf(latitude.substring(first + 3, second)) / 60 + Double.valueOf(latitude.substring(second + 3, third)) / (3600 * 100));
+                    first = longitude.indexOf('/');
+                    second = longitude.indexOf('/', first + 1);
+                    third = longitude.indexOf('/', second + 1);
+                    longitude = "" + -1 * (Double.valueOf(longitude.substring(0, first)) + Double.valueOf(longitude.substring(first + 3, second)) / 60 + Double.valueOf(longitude.substring(second + 3, third)) / (3600 * 100));
+                    longlat = Math.round(Double.valueOf(latitude) * 1000) / 1000.0 + ", " + Math.round(Double.valueOf(longitude) * 1000) / 1000.0;
+                    //Log.d("IGAOO",exif);
+                    editcoords.setText(longlat);
+                    editcoords.setTextColor(Color.BLACK);
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(),
@@ -183,11 +178,11 @@ public static final int PICK_IMAGE = 1;
 
     public  void AddData()
     {
-        if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editSeverity.getText())&&TextUtils.isDigitsOnly(editSeverity.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
+        if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editcoords.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
         boolean isInserted = myDb.insertData(
                 editName.getText().toString(),
                 editDescription.getText().toString(),
-                Integer.parseInt(editSeverity.getText().toString()),
+                editcoords.getText().toString(),
                 Integer.parseInt(editDateM.getText().toString()),Integer.parseInt(editDateD.getText().toString()),Integer.parseInt(editDateY.getText().toString()),imgByte);
 
         if (isInserted) {

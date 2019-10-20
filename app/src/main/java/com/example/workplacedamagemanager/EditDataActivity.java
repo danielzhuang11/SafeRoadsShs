@@ -60,7 +60,7 @@ public class EditDataActivity extends AppCompatActivity {
     private int selectedDateM;
     private int selectedDateD;
     private int selectedDateY;
-    private int selectedSeverity;
+    private String selectedSeverity;
     private String selectedDescription;
     private byte[] selectedImage;
 
@@ -108,11 +108,11 @@ public class EditDataActivity extends AppCompatActivity {
         selectedDateM = receivedIntent.getIntExtra("datem",-1);
         selectedDateD = receivedIntent.getIntExtra("dated",-1);
         selectedDateY = receivedIntent.getIntExtra("datey",-1);
-        selectedSeverity = receivedIntent.getIntExtra("severity",-1);
+        selectedSeverity = receivedIntent.getStringExtra("severity");
         selectedImage = receivedIntent.getByteArrayExtra("image");
         //set the text to show the current selected name
         Ntxt.setText(selectedName);
-        Stxt.setText(Integer.toString(selectedSeverity));
+        Stxt.setText((selectedSeverity));
         DMtxt.setText(Integer.toString(selectedDateM));
         DDtxt.setText(Integer.toString(selectedDateD));
         DYtxt.setText(Integer.toString(selectedDateY));
@@ -129,7 +129,7 @@ public class EditDataActivity extends AppCompatActivity {
                     String name = Ntxt.getText().toString();
             String description = Dtxt.getText().toString();
 
-                int severity = Integer.parseInt(Stxt.getText().toString());
+                String severity = (Stxt.getText().toString());
                 int dateM = Integer.parseInt(DMtxt.getText().toString());
                 int dateD = Integer.parseInt(DDtxt.getText().toString());
                 int dateY = Integer.parseInt(DYtxt.getText().toString());
@@ -179,7 +179,7 @@ public class EditDataActivity extends AppCompatActivity {
         final ProgressDialog loading = ProgressDialog.show(this,"Adding Item","Please wait");
        final String name = Ntxt.getText().toString();
         final String description = Dtxt.getText().toString();
-        final int severity = Integer.parseInt(Stxt.getText().toString());
+        final String severity = Stxt.getText().toString();
         final int dateM = Integer.parseInt(DMtxt.getText().toString());
         final  int dateD = Integer.parseInt(DDtxt.getText().toString());
         final  int dateY = Integer.parseInt(DYtxt.getText().toString());
@@ -213,6 +213,7 @@ public class EditDataActivity extends AppCompatActivity {
                 params.put("name",name);
                 params.put("description",description);
                 params.put("img",encodedImage);
+                params.put("coords",severity);
 
                 return params;
             }
