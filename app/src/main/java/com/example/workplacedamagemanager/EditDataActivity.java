@@ -170,7 +170,6 @@ public class EditDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addItemToSheet();
-                toastMessage("sent to sheet!");
 
             }
         });

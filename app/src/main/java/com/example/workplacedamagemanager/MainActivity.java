@@ -26,24 +26,28 @@ import java.util.zip.DataFormatException;
 
 public class MainActivity extends AppCompatActivity {
     DatabaseHelper myDb;
+    DatabaseHelper2 myDb2;
     EditText  search;
     Button add;
     Button file, refresh, se;
-    private ListView mListView;
+    private ListView mListView , mListView2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         myDb = new DatabaseHelper(this);
+        myDb2 = new DatabaseHelper2(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         search = (EditText) findViewById(R.id.editText);
 
-        LayoutInflater factory = getLayoutInflater();
-      View  view = factory.inflate(R.layout.record, null);
+/*        LayoutInflater factory = getLayoutInflater();
+         View  view = factory.inflate(R.layout.record, null);*/
         mListView = (ListView)findViewById(R.id.listView);
+        mListView2 = (ListView)findViewById(R.id.listView2);
 
         populateListView();
-refresh = (Button)findViewById(R.id.refresh);
+        refresh = (Button)findViewById(R.id.refresh);
         se = (Button)findViewById(R.id.se);
 
 
@@ -64,13 +68,7 @@ refresh = (Button)findViewById(R.id.refresh);
             }
         });
 
-
-
-
     }
-
-
-
 
     public void populateListViewSearch(Cursor data) {
         Log.d("hi", "populateListView: Displaying data in the ListView.");
@@ -91,15 +89,29 @@ refresh = (Button)findViewById(R.id.refresh);
 
         //get the data and append to a list
         Cursor data = myDb.getAllData();
+        Cursor data2 = myDb2.getAllData();
+
         ArrayList<String> listData = new ArrayList<>();
+
+        ArrayList<String> listData2 = new ArrayList<>();
+
         while(data.moveToNext()){
             //get the value from the database in column 1
             //then add it to the ArrayList
             listData.add(data.getString(1));
         }
+
+        while(data2.moveToNext()){
+            //get the value from the database in column 1
+            //then add it to the ArrayList
+            listData2.add(data2.getString(1));
+        }
         //create the list adapter and set the adapter
         ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
+        ListAdapter adapter2 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData2);
+
         mListView.setAdapter(adapter);
+        mListView2.setAdapter(adapter2);
 
         //set an onItemClickListener to the ListView
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -149,6 +161,39 @@ refresh = (Button)findViewById(R.id.refresh);
                 }
             }
         });
+        mListView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String date = adapterView.getItemAtPosition(i).toString();
+                Cursor data = myDb2.getItemID(date); //get the id associated with that name
+                int itemID = -1;
+                String GPS ="" ;
+                while(data.moveToNext()){
+                    itemID = data.getInt(0);
+                    GPS = data.getString(2);
+
+
+
+                }
+                if(itemID > -1){
+                    Intent editScreenIntent = new Intent(view.getContext(), ViewAutoDataActivity.class);
+                    editScreenIntent.putExtra("id",itemID);
+
+                    editScreenIntent.putExtra("date",date);
+
+                    editScreenIntent.putExtra("GPS",GPS);
+
+
+                    startActivity(editScreenIntent);
+                }
+                else{
+                    Toast.makeText(MainActivity.this,"NO ID ASSOCIATED",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
+
     }
 
 
