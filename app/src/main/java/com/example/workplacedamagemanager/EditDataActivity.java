@@ -3,15 +3,18 @@ package com.example.workplacedamagemanager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 //import android.support.v7.app.AppCompatActivity;
+import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +34,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +66,7 @@ public class EditDataActivity extends AppCompatActivity {
     private int selectedDateM;
     private int selectedDateD;
     private int selectedDateY;
-    private int selectedSeverity;
+    private String selectedSeverity;
     private String selectedDescription;
     private byte[] selectedImage;
 
@@ -108,11 +114,11 @@ public class EditDataActivity extends AppCompatActivity {
         selectedDateM = receivedIntent.getIntExtra("datem",-1);
         selectedDateD = receivedIntent.getIntExtra("dated",-1);
         selectedDateY = receivedIntent.getIntExtra("datey",-1);
-        selectedSeverity = receivedIntent.getIntExtra("severity",-1);
+        selectedSeverity = receivedIntent.getStringExtra("severity");
         selectedImage = receivedIntent.getByteArrayExtra("image");
         //set the text to show the current selected name
         Ntxt.setText(selectedName);
-        Stxt.setText(Integer.toString(selectedSeverity));
+        Stxt.setText((selectedSeverity));
         DMtxt.setText(Integer.toString(selectedDateM));
         DDtxt.setText(Integer.toString(selectedDateD));
         DYtxt.setText(Integer.toString(selectedDateY));
@@ -126,10 +132,11 @@ public class EditDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                    if (!(Stxt.getText().toString()).equals("No Metadata")) {
                     String name = Ntxt.getText().toString();
             String description = Dtxt.getText().toString();
 
-                int severity = Integer.parseInt(Stxt.getText().toString());
+                String severity = (Stxt.getText().toString());
                 int dateM = Integer.parseInt(DMtxt.getText().toString());
                 int dateD = Integer.parseInt(DDtxt.getText().toString());
                 int dateY = Integer.parseInt(DYtxt.getText().toString());
@@ -139,6 +146,10 @@ public class EditDataActivity extends AppCompatActivity {
                     mDatabaseHelper.updateName(name,selectedID,selectedName, description, dateM, dateD, dateY, severity,selectedImage);
                     Intent editScreenIntent = new Intent(view.getContext(), MainActivity.class);
                     startActivity(editScreenIntent);
+                }
+                else{
+                    toastMessage("Please use a picture with metadata or allow location priveliges");
+                }
                 }else{
                     toastMessage("You must fill all fields");
                 }
@@ -169,7 +180,17 @@ public class EditDataActivity extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItemToSheet();
+
+                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                    if (!(Stxt.getText().toString()).equals("No Metadata")) {
+                        addItemToSheet();
+                    }
+                    else{
+                        toastMessage("Please use a picture with metadata or allow location priveliges");
+                    }
+                }else{
+                    toastMessage("You must fill all fields");
+                }
 
             }
         });
@@ -179,7 +200,7 @@ public class EditDataActivity extends AppCompatActivity {
         final ProgressDialog loading = ProgressDialog.show(this,"Adding Item","Please wait");
        final String name = Ntxt.getText().toString();
         final String description = Dtxt.getText().toString();
-        final int severity = Integer.parseInt(Stxt.getText().toString());
+        final String severity = Stxt.getText().toString();
         final int dateM = Integer.parseInt(DMtxt.getText().toString());
         final  int dateD = Integer.parseInt(DDtxt.getText().toString());
         final  int dateY = Integer.parseInt(DYtxt.getText().toString());
@@ -213,6 +234,7 @@ public class EditDataActivity extends AppCompatActivity {
                 params.put("name",name);
                 params.put("description",description);
                 params.put("img",encodedImage);
+                params.put("coords",severity);
 
                 return params;
             }
@@ -229,6 +251,72 @@ public class EditDataActivity extends AppCompatActivity {
 
 
     }
+    void showExif(Uri photoUri){
+        if(photoUri != null){
+
+            ParcelFileDescriptor parcelFileDescriptor = null;
+
+            /*
+            How to convert the Uri to FileDescriptor, refer to the example in the document:
+            https://developer.android.com/guide/topics/providers/document-provider.html
+             */
+            try {
+                parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r");
+                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+
+                /*
+                ExifInterface (FileDescriptor fileDescriptor) added in API level 24
+                 */
+                ExifInterface exifInterface = new ExifInterface(fileDescriptor);
+                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                String longlat = "";
+                if (longitude == null || latitude == null){
+                    longitude = "";
+                    latitude = "";
+                    Stxt.setText("No Metadata");
+                    Stxt.setTextColor(Color.RED);
+                }
+
+                else if (longitude != null && latitude != null) {
+                    int first = latitude.indexOf('/');
+                    int second = latitude.indexOf('/', first + 1);
+                    int third = latitude.indexOf('/', second + 1);
+                    latitude = "" + (Double.valueOf(latitude.substring(0, first)) + Double.valueOf(latitude.substring(first + 3, second)) / 60 + Double.valueOf(latitude.substring(second + 3, third)) / (3600 * 100));
+                    first = longitude.indexOf('/');
+                    second = longitude.indexOf('/', first + 1);
+                    third = longitude.indexOf('/', second + 1);
+                    longitude = "" + -1 * (Double.valueOf(longitude.substring(0, first)) + Double.valueOf(longitude.substring(first + 3, second)) / 60 + Double.valueOf(longitude.substring(second + 3, third)) / (3600 * 100));
+                    longlat = Math.round(Double.valueOf(latitude) * 1000) / 1000.0 + ", " + Math.round(Double.valueOf(longitude) * 1000) / 1000.0;
+                    //Log.d("IGAOO",exif);
+                    Stxt.setText(longlat);
+                    Stxt.setTextColor(Color.BLACK);
+                    longitude = "";
+                    latitude = "";
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),
+                        "Something wrong:\n" + e.toString(),
+                        Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),
+                        "Something wrong:\n" + e.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+
+            String strPhotoPath = photoUri.getPath();
+
+        }else{
+            Toast.makeText(getApplicationContext(),
+                    "photoUri == null",
+                    Toast.LENGTH_LONG).show();
+        }
+    };
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
@@ -236,7 +324,7 @@ public class EditDataActivity extends AppCompatActivity {
 //TODO: action
             Uri uri = data.getData();
             InputStream inputStream = null;
-
+            showExif(uri);
             try {
 
                 inputStream = getContentResolver().openInputStream(uri);
@@ -265,7 +353,7 @@ public class EditDataActivity extends AppCompatActivity {
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return outputStream.toByteArray();
     }
 

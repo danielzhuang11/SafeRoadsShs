@@ -3,6 +3,7 @@ package com.example.workplacedamagemanager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -28,7 +29,7 @@ import java.io.FileNotFoundException;
 public class Record extends AppCompatActivity {
 
 public static final int PICK_IMAGE = 1;
-    EditText editName, editDescription, editSeverity,editDateM, editDateD, editDateY;
+    EditText editName, editDescription, editcoords,editDateM, editDateD, editDateY;
     Button add,img;
     DatabaseHelper myDb;
     byte[] imgByte = null;
@@ -47,7 +48,7 @@ public static final int PICK_IMAGE = 1;
         editDateY = (EditText)findViewById(R.id.editText_dY);
         editDescription = (EditText)findViewById(R.id.editText_d);
         editName = (EditText)findViewById(R.id.editText_n);
-        editSeverity = (EditText)findViewById(R.id.editText_s);
+        editcoords = (EditText)findViewById(R.id.editText_s);
         img = findViewById(R.id.button2);
         add.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -87,29 +88,34 @@ public static final int PICK_IMAGE = 1;
                 ExifInterface (FileDescriptor fileDescriptor) added in API level 24
                  */
                 ExifInterface exifInterface = new ExifInterface(fileDescriptor);
-                String exif="Exif: " + fileDescriptor.toString();
+                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                String longlat = "";
+                if (longitude == null || latitude == null){
+                    longitude = "";
+                    latitude = "";
+                    editcoords.setText("No Metadata");
+                    editcoords.setTextColor(Color.RED);
+                }
 
-                exif += "\nGPS related:";
-                exif += "\n TAG_GPS_DATESTAMP: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
-                exif += "\n TAG_GPS_TIMESTAMP: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
-                exif += "\n TAG_GPS_LATITUDE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                exif += "\n TAG_GPS_LATITUDE_REF: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-                exif += "\n TAG_GPS_LONGITUDE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-                exif += "\n TAG_GPS_LONGITUDE_REF: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-                exif += "\n TAG_GPS_PROCESSING_METHOD: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
+                else if (longitude != null && latitude != null) {
+                    int first = latitude.indexOf('/');
+                    int second = latitude.indexOf('/', first + 1);
+                    int third = latitude.indexOf('/', second + 1);
+                    latitude = "" + (Double.valueOf(latitude.substring(0, first)) + Double.valueOf(latitude.substring(first + 3, second)) / 60 + Double.valueOf(latitude.substring(second + 3, third)) / (3600 * 100));
+                    first = longitude.indexOf('/');
+                    second = longitude.indexOf('/', first + 1);
+                    third = longitude.indexOf('/', second + 1);
+                    longitude = "" + -1 * (Double.valueOf(longitude.substring(0, first)) + Double.valueOf(longitude.substring(first + 3, second)) / 60 + Double.valueOf(longitude.substring(second + 3, third)) / (3600 * 100));
+                    longlat = Math.round(Double.valueOf(latitude) * 1000) / 1000.0 + ", " + Math.round(Double.valueOf(longitude) * 1000) / 1000.0;
+                    //Log.d("IGAOO",exif);
+                    editcoords.setText(longlat);
+                    editcoords.setTextColor(Color.BLACK);
+                    longitude = "";
+                    latitude = "";
+                }
 
-                parcelFileDescriptor.close();
-
-                Toast.makeText(getApplicationContext(),
-                        exif,
-                        Toast.LENGTH_LONG).show();
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -177,27 +183,35 @@ public static final int PICK_IMAGE = 1;
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return outputStream.toByteArray();
     }
 
     public  void AddData()
     {
-        if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editSeverity.getText())&&TextUtils.isDigitsOnly(editSeverity.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
-        boolean isInserted = myDb.insertData(
-                editName.getText().toString(),
-                editDescription.getText().toString(),
-                Integer.parseInt(editSeverity.getText().toString()),
-                Integer.parseInt(editDateM.getText().toString()),Integer.parseInt(editDateD.getText().toString()),Integer.parseInt(editDateY.getText().toString()),imgByte);
+        if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editcoords.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
+            if (!(editcoords.getText().toString()).equals("No Metadata")) {
 
-        if (isInserted) {
-            Toast.makeText(this, "Data inserted", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "Data not inserted", Toast.LENGTH_LONG).show();
+                boolean isInserted = myDb.insertData(
+                        editName.getText().toString(),
+                        editDescription.getText().toString(),
+                        editcoords.getText().toString(),
+                        Integer.parseInt(editDateM.getText().toString()), Integer.parseInt(editDateD.getText().toString()), Integer.parseInt(editDateY.getText().toString()), imgByte);
+
+                if (isInserted) {
+                    Toast.makeText(this, "Data inserted", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Data not inserted", Toast.LENGTH_LONG).show();
+                }
+            }
+        else{
+            Toast.makeText(this, "Please use a picture with metadata or allow location priveliges", Toast.LENGTH_LONG).show();
+            }
         }
-        }else{
+
+        else{
             Toast.makeText(this, "You must fill all fields", Toast.LENGTH_LONG).show();
         }
 
