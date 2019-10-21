@@ -32,5 +32,6 @@ dependencies {
     implementation "androidx.exifinterface:exifinterface:1.0.0-rc01"
 // https://mvnrepository.com/artifact/com.drewnoakes/metadata-extractor
     implementation group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.8.1'
+    implementation "androidx.cardview:cardview:1.0.0"
 
 }
