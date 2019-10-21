@@ -3,15 +3,18 @@ package com.example.workplacedamagemanager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 //import android.support.v7.app.AppCompatActivity;
+import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +34,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,6 +132,7 @@ public class EditDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                    if (!(Stxt.getText().toString()).equals("No Metadata")) {
                     String name = Ntxt.getText().toString();
             String description = Dtxt.getText().toString();
 
@@ -139,6 +146,10 @@ public class EditDataActivity extends AppCompatActivity {
                     mDatabaseHelper.updateName(name,selectedID,selectedName, description, dateM, dateD, dateY, severity,selectedImage);
                     Intent editScreenIntent = new Intent(view.getContext(), MainActivity.class);
                     startActivity(editScreenIntent);
+                }
+                else{
+                    toastMessage("Please use a picture with metadata or allow location priveliges");
+                }
                 }else{
                     toastMessage("You must fill all fields");
                 }
@@ -169,7 +180,17 @@ public class EditDataActivity extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItemToSheet();
+
+                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                    if (!(Stxt.getText().toString()).equals("No Metadata")) {
+                        addItemToSheet();
+                    }
+                    else{
+                        toastMessage("Please use a picture with metadata or allow location priveliges");
+                    }
+                }else{
+                    toastMessage("You must fill all fields");
+                }
 
             }
         });
@@ -230,6 +251,72 @@ public class EditDataActivity extends AppCompatActivity {
 
 
     }
+    void showExif(Uri photoUri){
+        if(photoUri != null){
+
+            ParcelFileDescriptor parcelFileDescriptor = null;
+
+            /*
+            How to convert the Uri to FileDescriptor, refer to the example in the document:
+            https://developer.android.com/guide/topics/providers/document-provider.html
+             */
+            try {
+                parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r");
+                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+
+                /*
+                ExifInterface (FileDescriptor fileDescriptor) added in API level 24
+                 */
+                ExifInterface exifInterface = new ExifInterface(fileDescriptor);
+                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                String longlat = "";
+                if (longitude == null || latitude == null){
+                    longitude = "";
+                    latitude = "";
+                    Stxt.setText("No Metadata");
+                    Stxt.setTextColor(Color.RED);
+                }
+
+                else if (longitude != null && latitude != null) {
+                    int first = latitude.indexOf('/');
+                    int second = latitude.indexOf('/', first + 1);
+                    int third = latitude.indexOf('/', second + 1);
+                    latitude = "" + (Double.valueOf(latitude.substring(0, first)) + Double.valueOf(latitude.substring(first + 3, second)) / 60 + Double.valueOf(latitude.substring(second + 3, third)) / (3600 * 100));
+                    first = longitude.indexOf('/');
+                    second = longitude.indexOf('/', first + 1);
+                    third = longitude.indexOf('/', second + 1);
+                    longitude = "" + -1 * (Double.valueOf(longitude.substring(0, first)) + Double.valueOf(longitude.substring(first + 3, second)) / 60 + Double.valueOf(longitude.substring(second + 3, third)) / (3600 * 100));
+                    longlat = Math.round(Double.valueOf(latitude) * 1000) / 1000.0 + ", " + Math.round(Double.valueOf(longitude) * 1000) / 1000.0;
+                    //Log.d("IGAOO",exif);
+                    Stxt.setText(longlat);
+                    Stxt.setTextColor(Color.BLACK);
+                    longitude = "";
+                    latitude = "";
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),
+                        "Something wrong:\n" + e.toString(),
+                        Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),
+                        "Something wrong:\n" + e.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+
+            String strPhotoPath = photoUri.getPath();
+
+        }else{
+            Toast.makeText(getApplicationContext(),
+                    "photoUri == null",
+                    Toast.LENGTH_LONG).show();
+        }
+    };
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
@@ -237,7 +324,7 @@ public class EditDataActivity extends AppCompatActivity {
 //TODO: action
             Uri uri = data.getData();
             InputStream inputStream = null;
-
+            showExif(uri);
             try {
 
                 inputStream = getContentResolver().openInputStream(uri);
@@ -266,7 +353,7 @@ public class EditDataActivity extends AppCompatActivity {
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return outputStream.toByteArray();
     }
 

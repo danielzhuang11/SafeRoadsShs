@@ -92,7 +92,14 @@ public static final int PICK_IMAGE = 1;
                 String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
                 String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
                 String longlat = "";
-                if (!longitude.equals("null") && !latitude.equals("null")) {
+                if (longitude == null || latitude == null){
+                    longitude = "";
+                    latitude = "";
+                    editcoords.setText("No Metadata");
+                    editcoords.setTextColor(Color.RED);
+                }
+
+                else if (longitude != null && latitude != null) {
                     int first = latitude.indexOf('/');
                     int second = latitude.indexOf('/', first + 1);
                     int third = latitude.indexOf('/', second + 1);
@@ -105,7 +112,11 @@ public static final int PICK_IMAGE = 1;
                     //Log.d("IGAOO",exif);
                     editcoords.setText(longlat);
                     editcoords.setTextColor(Color.BLACK);
+                    longitude = "";
+                    latitude = "";
                 }
+
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(),
@@ -172,27 +183,35 @@ public static final int PICK_IMAGE = 1;
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return outputStream.toByteArray();
     }
 
     public  void AddData()
     {
         if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editcoords.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
-        boolean isInserted = myDb.insertData(
-                editName.getText().toString(),
-                editDescription.getText().toString(),
-                editcoords.getText().toString(),
-                Integer.parseInt(editDateM.getText().toString()),Integer.parseInt(editDateD.getText().toString()),Integer.parseInt(editDateY.getText().toString()),imgByte);
+            if (!(editcoords.getText().toString()).equals("No Metadata")) {
 
-        if (isInserted) {
-            Toast.makeText(this, "Data inserted", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "Data not inserted", Toast.LENGTH_LONG).show();
+                boolean isInserted = myDb.insertData(
+                        editName.getText().toString(),
+                        editDescription.getText().toString(),
+                        editcoords.getText().toString(),
+                        Integer.parseInt(editDateM.getText().toString()), Integer.parseInt(editDateD.getText().toString()), Integer.parseInt(editDateY.getText().toString()), imgByte);
+
+                if (isInserted) {
+                    Toast.makeText(this, "Data inserted", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Data not inserted", Toast.LENGTH_LONG).show();
+                }
+            }
+        else{
+            Toast.makeText(this, "Please use a picture with metadata or allow location priveliges", Toast.LENGTH_LONG).show();
+            }
         }
-        }else{
+
+        else{
             Toast.makeText(this, "You must fill all fields", Toast.LENGTH_LONG).show();
         }
 
