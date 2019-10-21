@@ -44,13 +44,13 @@
 
     <TextView
         android:id="@+id/textGPS"
-        android:layout_width="116dp"
-        android:layout_height="39dp"
+        android:layout_width="174dp"
+        android:layout_height="137dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="139dp"
-        android:layout_marginTop="187dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="160dp"
         android:text="GPS" />
 
     <TextView
@@ -60,8 +60,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="81dp"
-        android:layout_marginTop="286dp"
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="366dp"
         android:autoLink="web"
         android:text="Google maps Link" />
 
@@ -81,8 +81,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="253dp"
+        android:layout_marginStart="134dp"
+        android:layout_marginTop="339dp"
         android:text="Google Maps link:" />
 
 </RelativeLayout>

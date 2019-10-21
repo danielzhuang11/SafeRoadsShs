@@ -1,23 +1,43 @@
 package com.example.workplacedamagemanager;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.Executor;
 
-public class ShakeService extends Service implements SensorEventListener {
+public class ShakeService extends Service implements SensorEventListener  {
     DatabaseHelper2 myDb;
 
     private SensorManager mSensorManager;
@@ -25,7 +45,10 @@ public class ShakeService extends Service implements SensorEventListener {
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
     private float mAccelLast; // last acceleration including gravity
-
+    private LocationManager locationManager;
+    private LocationListener listener;
+    private String gps;
+    private FusedLocationProviderClient client;
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -33,6 +56,7 @@ public class ShakeService extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -44,6 +68,8 @@ public class ShakeService extends Service implements SensorEventListener {
 
 
     }
+
+
     @Override
     public void onDestroy() {
         mSensorManager.unregisterListener(this);
@@ -70,9 +96,23 @@ public class ShakeService extends Service implements SensorEventListener {
             Toast.makeText(this, "Recording Bump", Toast.LENGTH_SHORT).show();
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
-            myDb.insertData(dateFormat.format(date),"30,30");
+            client = LocationServices.getFusedLocationProviderClient(this);
+
+            client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if(location!=null){
+                        gps=location.getLatitude() + "," + location.getLongitude();
+
+                    }
+                }
+            });
+
+            myDb.insertData(dateFormat.format(date),gps);
 
         }
     }
+
+
 
 }

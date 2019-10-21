@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String col_4 = "DATEM";
     public static final String col_5 = "DATED";
     public static final String col_6 = "DATEY";
-    public static final String col_7 = "SEVERITY";
+    public static final String col_7 = "GPS";
     private static final String TAG = "Message:";
      public static final String col_8 = "IMAGE";
 
@@ -33,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, DATEM INTEGER, DATED INTEGER, DATEY INTEGER, SEVERITY INTEGER, IMAGE BLOB)");
+    db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, DATEM INTEGER, DATED INTEGER, DATEY INTEGER, GPS TEXT, IMAGE BLOB)");
     }
 
     @Override
