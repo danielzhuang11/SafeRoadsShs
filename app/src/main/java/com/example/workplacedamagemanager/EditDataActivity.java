@@ -288,7 +288,7 @@ public class EditDataActivity extends AppCompatActivity {
                     second = longitude.indexOf('/', first + 1);
                     third = longitude.indexOf('/', second + 1);
                     longitude = "" + -1 * (Double.valueOf(longitude.substring(0, first)) + Double.valueOf(longitude.substring(first + 3, second)) / 60 + Double.valueOf(longitude.substring(second + 3, third)) / (3600 * 100));
-                    longlat = Math.round(Double.valueOf(latitude) * 1000) / 1000.0 + ", " + Math.round(Double.valueOf(longitude) * 1000) / 1000.0;
+                    longlat = Math.round(Double.valueOf(latitude) * 1000000) / 1000000.0 + ", " + Math.round(Double.valueOf(longitude) * 1000000) / 1000000.0;
                     //Log.d("IGAOO",exif);
                     Stxt.setText(longlat);
                     Stxt.setTextColor(Color.BLACK);
