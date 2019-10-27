@@ -14,7 +14,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -32,14 +34,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public class ShakeService extends Service implements SensorEventListener  {
     DatabaseHelper2 myDb;
-
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private float mAccel; // acceleration apart from gravity
@@ -90,25 +94,32 @@ public class ShakeService extends Service implements SensorEventListener  {
         float delta = mAccelCurrent - mAccelLast;
         mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-        if (mAccel > 11) {
+        if (mAccel > 9) {
             Random rnd = new Random();
             int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
             Toast.makeText(this, "Recording Bump", Toast.LENGTH_SHORT).show();
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
+            long diffInMs = date.getTime() - RealMainActivity.lastDate.getTime();
+            long diffInSec = TimeUnit.MILLISECONDS.toSeconds(diffInMs);
             client = LocationServices.getFusedLocationProviderClient(this);
+            if(diffInSec>3)
+            {
+                RealMainActivity.lastDate=date;
+                if (gps != null)
+                    myDb.insertData(dateFormat.format(date), gps);}
 
             client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    if(location!=null){
-                        gps=location.getLatitude() + "," + location.getLongitude();
+                    if (location != null) {
+                        gps = location.getLatitude() + "," + location.getLongitude();
 
                     }
                 }
             });
 
-            myDb.insertData(dateFormat.format(date),gps);
+
 
         }
     }

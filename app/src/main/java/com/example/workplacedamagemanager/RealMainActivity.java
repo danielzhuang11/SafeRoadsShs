@@ -11,8 +11,13 @@ import android.widget.Button;
 import android.graphics.Color;
 import android.widget.CompoundButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class RealMainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
+    public static Date lastDate = parseDate("2019-9-11");
 
     public static Boolean toggle = false;
     Switch switch1;
@@ -71,6 +76,13 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
     public void database(View view) {
         Intent intent1 = new Intent(this, MainActivity.class);
         this.startActivity(intent1);
+    }
+    public static Date parseDate(String date) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+        } catch (ParseException e) {
+            return null;
+        }
     }
     public void toggle(View view) {
         toggle = !toggle;

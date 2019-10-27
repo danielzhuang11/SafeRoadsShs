@@ -93,10 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put(col_6, dY);
             contentValues.put(col_7, s);
             contentValues.put(col_8, i);
-
-
             db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{Integer.toString(id)} );
-
         }
         catch(Exception e)
         {
