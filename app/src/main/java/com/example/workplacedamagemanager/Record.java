@@ -29,7 +29,7 @@ import java.io.FileNotFoundException;
 public class Record extends AppCompatActivity {
 
 public static final int PICK_IMAGE = 1;
-    EditText editName, editDescription, editcoords,editDateM, editDateD, editDateY;
+    EditText editName, editDescription, editcoords,editDateM;
     Button add,img;
     DatabaseHelper myDb;
     byte[] imgByte = null;
@@ -44,8 +44,6 @@ public static final int PICK_IMAGE = 1;
 
         add = findViewById(R.id.button);
         editDateM = (EditText)findViewById(R.id.editText_dM);
-        editDateD = (EditText)findViewById(R.id.editText_dD);
-        editDateY = (EditText)findViewById(R.id.editText_dY);
         editDescription = (EditText)findViewById(R.id.editText_d);
         editName = (EditText)findViewById(R.id.editText_n);
         editcoords = (EditText)findViewById(R.id.editText_s);
@@ -97,6 +95,8 @@ public static final int PICK_IMAGE = 1;
                     latitude = "";
                     editcoords.setText("No Metadata");
                     editcoords.setTextColor(Color.RED);
+                    editDateM.setText("No Metadata");
+                    editDateM.setTextColor(Color.RED);
                 }
 
                 else if (longitude != null && latitude != null) {
@@ -112,6 +112,8 @@ public static final int PICK_IMAGE = 1;
                     //Log.d("IGAOO",exif);
                     editcoords.setText(longlat);
                     editcoords.setTextColor(Color.BLACK);
+                    editDateM.setText(datetime);
+                    editDateM.setTextColor(Color.BLACK);
                     longitude = "";
                     latitude = "";
                 }
@@ -189,14 +191,14 @@ public static final int PICK_IMAGE = 1;
 
     public  void AddData()
     {
-        if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editcoords.getText()))&& !TextUtils.isEmpty(editDateM.getText())&&TextUtils.isDigitsOnly(editDateM.getText())&& !TextUtils.isEmpty(editDateD.getText()) &&TextUtils.isDigitsOnly(editDateD.getText())&& !TextUtils.isEmpty(editDateY.getText())&&TextUtils.isDigitsOnly(editDateY.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
+        if(!TextUtils.isEmpty(editName.getText())&& (!TextUtils.isEmpty(editcoords.getText()))&& !TextUtils.isEmpty(editDateM.getText())&& !TextUtils.isEmpty(editDescription.getText())&& imgByte != null) {
             if (!(editcoords.getText().toString()).equals("No Metadata")) {
 
                 boolean isInserted = myDb.insertData(
                         editName.getText().toString(),
                         editDescription.getText().toString(),
                         editcoords.getText().toString(),
-                        Integer.parseInt(editDateM.getText().toString()), Integer.parseInt(editDateD.getText().toString()), Integer.parseInt(editDateY.getText().toString()), imgByte);
+                        editDateM.getText().toString(), "", "", imgByte);
 
                 if (isInserted) {
                     Toast.makeText(this, "Data inserted", Toast.LENGTH_LONG).show();

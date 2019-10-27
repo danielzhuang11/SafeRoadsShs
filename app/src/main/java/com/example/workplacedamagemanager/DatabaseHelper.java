@@ -33,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, DATEM INTEGER, DATED INTEGER, DATEY INTEGER, SEVERITY TEXT, IMAGE BLOB)");
+    db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DESCRIPTION TEXT, DATEM TEXT, DATED TEXT, DATEY TEXT, SEVERITY TEXT, IMAGE BLOB)");
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          db.execSQL("DROP TABLE IF EXISTs " + TABLE_NAME);
         onCreate(db);
     }
-    public boolean insertData(String name, String description, String severity, int dateM, int dateD, int dateY, byte[] image)
+    public boolean insertData(String name, String description, String severity, String dateM, String dateD, String dateY, byte[] image)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -81,7 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param id
      * @param oldName
      */
-    public void updateName(String newName, int id, String oldName, String des, int dM,int dD,int dY, String s, byte[] i ){
+    public void updateName(String newName, int id, String oldName, String des, String dM,String dD,String dY, String s, byte[] i ){
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             ContentValues contentValues = new ContentValues();
