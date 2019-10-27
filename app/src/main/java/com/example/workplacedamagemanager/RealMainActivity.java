@@ -7,7 +7,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Switch;
 import android.view.View;
-
+import android.widget.Button;
+import android.graphics.Color;
 import android.widget.CompoundButton;
 
 
@@ -15,14 +16,12 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
 
     public static Boolean toggle = false;
     Switch switch1;
+    Button togg;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         setContentView(R.layout.main);
-        switch1 = (Switch)findViewById(R.id.detect);
-        switch1.setChecked(toggle);
-        switch1.setOnCheckedChangeListener(this);
-
+        togg = (Button)findViewById(R.id.detect);
         return true;
     }
 
@@ -50,10 +49,12 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
         if(switch1.isChecked())
         {
             toggle=true;
+            togg.setBackgroundColor(Color.GREEN);
             startService(new Intent(this, ShakeService.class));
 
         }else{
             toggle=false;
+            togg.setBackgroundColor(Color.RED);
             stopService(new Intent(this, ShakeService.class));
         }
     }
@@ -65,4 +66,18 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
         Intent intent1 = new Intent(this, MainActivity.class);
         this.startActivity(intent1);
     }
+    public void toggle(View view) {
+        toggle = !toggle;
+
+        if (toggle) {
+            togg.setBackgroundResource(R.drawable.ic_power_button1);
+            startService(new Intent(this, ShakeService.class));
+
+
+        } else {
+            togg.setBackgroundResource(R.drawable.ic_power_button);
+            stopService(new Intent(this, ShakeService.class));
+        }
+    }
+
 }
