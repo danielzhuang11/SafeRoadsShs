@@ -22,6 +22,12 @@ public class RealMainActivity extends AppCompatActivity implements CompoundButto
     public boolean onCreateOptionsMenu(Menu menu) {
         setContentView(R.layout.main);
         togg = (Button)findViewById(R.id.detect);
+        if (toggle) {
+            togg.setBackgroundResource(R.drawable.ic_power_button1);
+        }
+        else {
+            togg.setBackgroundResource(R.drawable.ic_power_button);
+        }
         return true;
     }
 
