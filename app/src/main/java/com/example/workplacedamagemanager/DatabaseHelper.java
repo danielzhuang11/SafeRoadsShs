@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String col_4 = "DATEM";
     public static final String col_5 = "DATED";
     public static final String col_6 = "DATEY";
-    public static final String col_7 = "SEVERITY";
+    public static final String col_7 = "GPS";
     private static final String TAG = "Message:";
      public static final String col_8 = "IMAGE";
 
@@ -93,10 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put(col_6, dY);
             contentValues.put(col_7, s);
             contentValues.put(col_8, i);
-
-
             db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{Integer.toString(id)} );
-
         }
         catch(Exception e)
         {
