@@ -37,6 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="387dp" />
 
+
     <EditText
         android:id="@+id/editText_dM"
         android:layout_width="175dp"
@@ -52,7 +53,6 @@
         android:text="Date"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="81dp" />
-
 
 
     <EditText
@@ -71,6 +71,7 @@
         android:enabled="false"
         tools:layout_editor_absoluteX="205dp"
         tools:layout_editor_absoluteY="80dp" />
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
