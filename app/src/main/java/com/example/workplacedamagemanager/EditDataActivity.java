@@ -51,7 +51,7 @@ public class EditDataActivity extends AppCompatActivity {
     private static final String TAG = "EditDataActivity";
 
     private Button btnSave,btnDelete,btnImage,btnSend;
-    private EditText Ntxt, Dtxt, DMtxt, DDtxt, DYtxt, Stxt;
+    private EditText Ntxt, Dtxt, DMtxt, Stxt;
     private ImageView Itxt;
 
    DatabaseHelper mDatabaseHelper;
@@ -63,9 +63,7 @@ public class EditDataActivity extends AppCompatActivity {
 
     private String selectedName;
     private int selectedID;
-    private int selectedDateM;
-    private int selectedDateD;
-    private int selectedDateY;
+    private String selectedDateM;
     private String selectedSeverity;
     private String selectedDescription;
     private byte[] selectedImage;
@@ -94,8 +92,6 @@ public class EditDataActivity extends AppCompatActivity {
         Itxt = (ImageView) findViewById(R.id.imageView);
 
         DMtxt = (EditText) findViewById(R.id.editText_dM);
-        DDtxt = (EditText) findViewById(R.id.editText_dD);
-        DYtxt = (EditText) findViewById(R.id.editText_dY);
 
 
         Stxt = (EditText) findViewById(R.id.editText_s);
@@ -111,17 +107,13 @@ public class EditDataActivity extends AppCompatActivity {
         //now get the name we passed as an extra
         selectedName = receivedIntent.getStringExtra("name");
         selectedDescription = receivedIntent.getStringExtra("description");
-        selectedDateM = receivedIntent.getIntExtra("datem",-1);
-        selectedDateD = receivedIntent.getIntExtra("dated",-1);
-        selectedDateY = receivedIntent.getIntExtra("datey",-1);
+        selectedDateM = receivedIntent.getStringExtra("datem");
         selectedSeverity = receivedIntent.getStringExtra("severity");
         selectedImage = receivedIntent.getByteArrayExtra("image");
         //set the text to show the current selected name
         Ntxt.setText(selectedName);
         Stxt.setText((selectedSeverity));
-        DMtxt.setText(Integer.toString(selectedDateM));
-        DDtxt.setText(Integer.toString(selectedDateD));
-        DYtxt.setText(Integer.toString(selectedDateY));
+        DMtxt.setText(selectedDateM);
         Dtxt.setText(selectedDescription);
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(selectedImage,0,selectedImage.length);
@@ -131,19 +123,17 @@ public class EditDataActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText()) &&  !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
                     if (!(Stxt.getText().toString()).equals("No Metadata")) {
                     String name = Ntxt.getText().toString();
             String description = Dtxt.getText().toString();
 
                 String severity = (Stxt.getText().toString());
-                int dateM = Integer.parseInt(DMtxt.getText().toString());
-                int dateD = Integer.parseInt(DDtxt.getText().toString());
-                int dateY = Integer.parseInt(DYtxt.getText().toString());
+                String dateM = DMtxt.getText().toString();
                 byte[] img = selectedImage;
               //  if(!name.equals("") && !description.equals("") && img != null && !Integer.toString(severity).equals("") && !Integer.toString(date).equals("")){
 
-                    mDatabaseHelper.updateName(name,selectedID,selectedName, description, dateM, dateD, dateY, severity,selectedImage);
+                    mDatabaseHelper.updateName(name,selectedID,selectedName, description, dateM, "", "", severity,selectedImage);
                     Intent editScreenIntent = new Intent(view.getContext(), MainActivity.class);
                     startActivity(editScreenIntent);
                 }
@@ -181,7 +171,7 @@ public class EditDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&&!TextUtils.isEmpty(DDtxt.getText())&&!TextUtils.isEmpty(DYtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
+                if(!TextUtils.isEmpty(Ntxt.getText())&& !TextUtils.isEmpty(Stxt.getText())&& !TextUtils.isEmpty(DMtxt.getText())&& !TextUtils.isEmpty(Dtxt.getText())&& hasImage(Itxt)){
                     if (!(Stxt.getText().toString()).equals("No Metadata")) {
                         addItemToSheet();
                     }
@@ -201,9 +191,7 @@ public class EditDataActivity extends AppCompatActivity {
        final String name = Ntxt.getText().toString();
         final String description = Dtxt.getText().toString();
         final String severity = Stxt.getText().toString();
-        final int dateM = Integer.parseInt(DMtxt.getText().toString());
-        final  int dateD = Integer.parseInt(DDtxt.getText().toString());
-        final  int dateY = Integer.parseInt(DYtxt.getText().toString());
+        final String dateM = DMtxt.getText().toString();
         final byte[] img = selectedImage;
         final String encodedImage = Base64.encodeToString(img, Base64.DEFAULT);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbzX0lhVQBZnfQURdQllg2RMlFMuBt2DRjUCq3Gp7QmlXsIvM1Ho/exec",
@@ -235,6 +223,7 @@ public class EditDataActivity extends AppCompatActivity {
                 params.put("description",description);
                 params.put("img",encodedImage);
                 params.put("coords",severity);
+                params.put("dates",dateM);
 
                 return params;
             }

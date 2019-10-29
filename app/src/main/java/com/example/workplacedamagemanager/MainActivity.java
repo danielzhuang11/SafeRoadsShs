@@ -121,18 +121,18 @@ public class MainActivity extends AppCompatActivity {
                 Cursor data = myDb.getItemID(name); //get the id associated with that name
                 int itemID = -1;
                 String description = "";
-                int dateD =-1;
-                int dateM= -1;
-                int dateY=-1;
+                String dateD = "";
+                String dateM= "";
+                String dateY= "";
                 String severity ="";
                 byte[] img=null;
                 while(data.moveToNext()){
                     itemID = data.getInt(0);
                      description= data.getString(2);
-                     dateM = data.getInt(3);
-                    dateD = data.getInt(4);
+                     dateM = data.getString(3);
+                    dateD = data.getString(4);
 
-                    dateY = data.getInt(5);
+                    dateY = data.getString(5);
 
                     severity = data.getString(6);
                     img = data.getBlob(7);
