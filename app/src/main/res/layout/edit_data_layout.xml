@@ -4,20 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <EditText
         android:id="@+id/editable_item"
-        android:layout_width="wrap_content"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="85dp"
-        android:layout_marginRight="85dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.585"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,24 +26,25 @@
         android:layout_width="348dp"
         android:layout_height="232dp"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginStart="28dp"
         android:layout_marginLeft="28dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="48dp"
         android:ems="10"
+        android:gravity="center"
+        android:hint="Description"
         android:inputType="textPersonName"
-        android:text="Description"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="387dp" />
 
-
     <EditText
         android:id="@+id/editText_dM"
-        android:layout_width="170dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="10dp"
-        android:layout_marginLeft="19dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="106dp"
         android:ems="10"
         android:enabled="false"
@@ -54,21 +53,7 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="81dp" />
 
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="135dp"
-        android:layout_marginLeft="135dp"
-        android:layout_marginTop="500dp"
-        android:layout_marginBottom="4dp"
-        android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="182dp" />
+
 
     <EditText
         android:id="@+id/editText_s"
@@ -86,6 +71,22 @@
         android:enabled="false"
         tools:layout_editor_absoluteX="205dp"
         tools:layout_editor_absoluteY="80dp" />
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="135dp"
+        android:layout_marginLeft="135dp"
+        android:layout_marginTop="500dp"
+        android:layout_marginBottom="4dp"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="182dp" />
+
 
     <Button
         android:id="@+id/btnDelete"
@@ -114,15 +115,16 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="246dp"
-        android:layout_height="233dp"
+        android:layout_width="250dp"
+        android:layout_height="235dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="165dp"
-        android:layout_marginEnd="165dp"
-        android:layout_marginRight="165dp"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        android:layout_marginTop="176dp"
+        android:layout_marginEnd="170dp"
+        android:layout_marginRight="170dp"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/ic_pothole"/>
 
     <Button
         android:id="@+id/btnSend"
@@ -133,7 +135,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="4dp"
         android:text="Send to Congress" />
 
 </RelativeLayout>
