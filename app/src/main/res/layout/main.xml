@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp">
+        android:layout_marginTop="20dp">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,12 +50,12 @@
         <Button
             android:id="@+id/detect"
             android:layout_width="210dp"
-            android:layout_height="210dp"
+            android:layout_height="150dp"
             android:background="@drawable/ic_power_button"
             android:onClick="toggle"
             android:textSize="15dp" />
     </RelativeLayout>
-        <LinearLayout
+        <LinearLayout android:gravity="bottom"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
