@@ -94,7 +94,7 @@ public class ShakeService extends Service implements SensorEventListener  {
         float delta = mAccelCurrent - mAccelLast;
         mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-        if (mAccel > 9) {
+        if (mAccel > 11) {
             Random rnd = new Random();
             int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
             Toast.makeText(this, "Recording Bump", Toast.LENGTH_SHORT).show();
