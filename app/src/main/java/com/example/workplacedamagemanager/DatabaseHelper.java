@@ -20,14 +20,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String col_4 = "DATEM";
     public static final String col_5 = "DATED";
     public static final String col_6 = "DATEY";
-    public static final String col_7 = "GPS";
+    public static final String col_7 = "SEVERITY";
     private static final String TAG = "Message:";
      public static final String col_8 = "IMAGE";
 
 
 
     public DatabaseHelper( Context context) {
-        super(context, DATABASE_NAME,null,4);
+        super(context, DATABASE_NAME,null,1);
         SQLiteDatabase db = this.getWritableDatabase();
     }
 
